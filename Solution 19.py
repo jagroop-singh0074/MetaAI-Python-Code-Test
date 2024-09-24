@@ -1,15 +1,14 @@
-class Solution:
-    def maxValue(self, nums, k):
+public class Solution:
+    def MaxValue(self, nums, k):
         n = len(nums)
-        dp = [0] * (1 << n)
-        for mask in range(1 << n):
-            count = bin(mask).count('1')
-            if count <= k:
-                for i in range(n):
-                    if mask & (1 << i):
-                        dp[mask] |= nums[i]
-        res = 0
-        for mask in range(1 << n):
-            if bin(mask).count('1') == k:
-                res = max(res, dp[mask] ^ dp[(1 << n) - 1 - mask])
-        return res
+        dp = [[0] * (k + 1) for _ in range(n + 1)]
+        
+        for i in range(1, n + 1):
+            or_val = 0
+            for j in range(min(i, k), 0, -1):
+                or_val |= nums[i - 1]
+                dp[i][j] = max(dp[i][j], dp[i - j][i - j] ^ or_val)
+                for l in range(1, j):
+                    dp[i][j] = max(dp[i][j], dp[i - l][i - l] ^ (or_val | nums[i - l - 1]))
+        
+        return dp[n][k]
